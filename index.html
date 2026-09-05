@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Im Drago</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root[data-theme="light"]{
+  --bg:#EFEAD8;
+  --bg-elevated:#F8F5EC;
+  --bg-sunken:#E5DFC9;
+  --ink:#22201A;
+  --ink-soft:#635D4C;
+  --ink-faint:#8A836E;
+  --line:rgba(34,32,26,.16);
+  --line-strong:rgba(34,32,26,.32);
+  --accent:#33604A;
+  --accent-ink:#F8F5EC;
+  --accent-soft:rgba(51,96,74,.12);
+  --warn:#A6621F;
+  --warn-soft:rgba(166,98,31,.12);
+  --danger:#8C3B30;
+  --danger-soft:rgba(140,59,48,.12);
+  --shadow:0 1px 0 rgba(34,32,26,.06);
+}
+:root[data-theme="dark"]{
+  --bg:#12181A;
+  --bg-elevated:#1B2224;
+  --bg-sunken:#0D1213;
+  --ink:#ECE6D6;
+  --ink-soft:#AFA890;
+  --ink-faint:#7C7867;
+  --line:rgba(236,230,214,.14);
+  --line-strong:rgba(236,230,214,.28);
+  --accent:#75AE8F;
+  --accent-ink:#0D1712;
+  --accent-soft:rgba(117,174,143,.16);
+  --warn:#D99A5B;
+  --warn-soft:rgba(217,154,91,.16);
+  --danger:#D98277;
+  --danger-soft:rgba(217,130,119,.16);
+  --shadow:0 1px 0 rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;
+  font-size:15px; line-height:1.6;
+  min-height:100vh;
+  transition:background .25s ease,color .25s ease;
+}
+h1,h2,h3,.display{font-family:'Noto Kufi Arabic','IBM Plex Sans Arabic',sans-serif}
+.tnum{font-variant-numeric:tabular-nums}
+button,input,select,textarea{font-family:inherit; font-size:inherit; color:inherit}
+input,select,textarea{
+  background:var(--bg-sunken); border:1px solid var(--line); border-radius:6px;
+  padding:9px 11px; width:100%;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent); outline-offset:1px}
+label{display:block; font-size:13px; color:var(--ink-soft); margin-bottom:4px}
+.field{margin-bottom:12px}
+.field-row{display:flex; gap:10px; flex-wrap:wrap}
+.field-row .field{flex:1; min-width:120px}
+button{cursor:pointer; border:none; border-radius:6px; background:var(--accent); color:var(--accent-ink); padding:10px 16px; font-weight:600}
+button.secondary{background:transparent; color:var(--ink); border:1px solid var(--line-strong)}
+button.ghost{background:transparent; color:var(--ink-soft); border:none; padding:6px 8px; font-weight:500}
+button.danger{background:var(--danger-soft); color:var(--danger)}
+button.warn{background:var(--warn-soft); color:var(--warn)}
+button.small{padding:6px 10px; font-size:13px; border-radius:5px}
+button:disabled{opacity:.45; cursor:not-allowed}
+.icon-btn{background:transparent; border:1px solid var(--line); width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--ink)}
+.icon-btn svg{width:18px; height:18px}
+::placeholder{color:var(--ink-faint)}
+
+/* ============ LOCK SCREEN ============ */
+.lock-screen{
+  position:fixed; inset:0; background:var(--bg); z-index:100;
+  display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px;
+  padding:24px;
+}
+.lock-card{width:100%; max-width:320px; text-align:center}
+.lock-mark{font-family:'Noto Kufi Arabic',sans-serif; font-weight:800; font-size:34px; letter-spacing:.5px; margin-bottom:2px}
+.lock-sub{color:var(--ink-soft); font-size:13px; margin-bottom:22px}
+.lock-error{color:var(--danger); font-size:13px; min-height:18px; margin-top:8px}
+.hidden{display:none !important}
+
+/* ============ SHELL ============ */
+#app-shell{max-width:760px; margin:0 auto; padding-bottom:90px}
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:18px 16px 10px}
+.brand{display:flex; align-items:center; gap:10px}
+.brand-mark{
+  width:40px; height:40px; border-radius:9px; background:var(--accent); color:var(--accent-ink);
+  display:flex; align-items:center; justify-content:center; font-family:'Noto Kufi Arabic',sans-serif; font-weight:800; font-size:15px;
+}
+.brand-text h1{font-size:19px; margin:0; font-weight:700}
+.brand-text p{font-size:12px; color:var(--ink-faint); margin:1px 0 0}
+.topbar-actions{display:flex; gap:8px}
+
+.tabbar{
+  display:flex; gap:2px; overflow-x:auto; padding:4px 16px 10px; border-bottom:1px solid var(--line);
+  scrollbar-width:none;
+}
+.tabbar::-webkit-scrollbar{display:none}
+.tab{
+  white-space:nowrap; background:transparent; color:var(--ink-faint); border:none; border-radius:0;
+  padding:9px 12px; font-weight:600; font-size:13.5px; border-bottom:2px solid transparent;
+}
+.tab.active{color:var(--accent); border-bottom-color:var(--accent)}
+
+main{padding:14px 16px 0}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ============ COMPONENTS ============ */
+.card{
+  background:var(--bg-elevated); border:1px solid var(--line); border-radius:10px;
+  padding:16px; margin-bottom:14px; box-shadow:var(--shadow);
+}
+.card h2{font-size:15px; margin:0 0 12px; font-weight:700}
+.card h2 .muted{color:var(--ink-faint); font-weight:500; font-size:12px}
+.section-title{font-size:13px; color:var(--ink-faint); font-weight:600; margin:22px 0 8px; padding-top:2px}
+.section-title:first-child{margin-top:0}
+
+/* ledger leader-line row: label ......... amount */
+.ledger-row{display:flex; align-items:baseline; gap:6px; padding:7px 0}
+.ledger-row + .ledger-row{border-top:1px dashed var(--line)}
+.ledger-row .lbl{white-space:nowrap; font-size:13.5px}
+.ledger-row .lead{flex:1; border-bottom:1px dotted var(--line-strong); height:0; transform:translateY(-4px); min-width:14px}
+.ledger-row .amt{white-space:nowrap; font-weight:700}
+.ledger-row .amt.pos{color:var(--accent)}
+.ledger-row .amt.neg{color:var(--danger)}
+.ledger-row .amt.due{color:var(--warn)}
+
+.wallet-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.wallet-card{
+  background:var(--bg-elevated); border:1px solid var(--line); border-radius:10px; padding:13px;
+}
+.wallet-card.cash{grid-column:1/-1; background:var(--accent-soft); border-color:transparent}
+.wallet-card .wname{font-size:12.5px; color:var(--ink-soft); font-weight:600; margin-bottom:6px}
+.wallet-card .wbal{font-family:'Noto Kufi Arabic',sans-serif; font-size:21px; font-weight:700}
+.wallet-card.cash .wbal{font-size:27px}
+.wallet-card button{margin-top:9px; width:100%}
+.wallet-btns{display:flex; gap:6px; margin-top:9px}
+.wallet-btns button{margin:0; flex:1; padding:8px 4px; font-size:12px}
+
+.list-entry{border-top:1px solid var(--line); padding:11px 0; display:flex; flex-direction:column; gap:3px}
+.list-entry:first-child{border-top:none}
+.list-entry .row1{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+.list-entry .who{font-weight:700; font-size:14px}
+.list-entry .amt{font-weight:700; font-family:'Noto Kufi Arabic',sans-serif}
+.list-entry .meta{font-size:12px; color:var(--ink-faint)}
+.list-entry .actions{display:flex; gap:6px; margin-top:6px}
+.badge{display:inline-block; font-size:11px; padding:2px 8px; border-radius:20px; font-weight:600}
+.badge.paid{background:var(--accent-soft); color:var(--accent)}
+.badge.unpaid{background:var(--warn-soft); color:var(--warn)}
+.badge.absent{background:var(--danger-soft); color:var(--danger)}
+
+.empty-state{color:var(--ink-faint); font-size:13px; text-align:center; padding:22px 10px}
+
+.habit-item{
+  display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line);
+}
+.habit-item:first-child{border-top:none}
+.habit-check{
+  width:24px; height:24px; border-radius:7px; border:1.5px solid var(--line-strong); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; background:var(--bg-sunken);
+}
+.habit-check.done{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.habit-name{flex:1; font-size:14px}
+.habit-time{font-size:11px; color:var(--ink-faint)}
+.habit-del{opacity:.5}
+
+.streak-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
+.streak-num{font-family:'Noto Kufi Arabic',sans-serif; font-size:30px; font-weight:800; color:var(--accent)}
+.streak-label{font-size:12px; color:var(--ink-soft)}
+.badges-row{display:flex; gap:8px; margin-top:10px}
+.milestone{flex:1; text-align:center; padding:10px 6px; border-radius:8px; background:var(--bg-sunken); border:1px solid var(--line)}
+.milestone.earned{background:var(--accent-soft); border-color:transparent}
+.milestone .mnum{font-weight:800; font-size:16px}
+.milestone .mlbl{font-size:11px; color:var(--ink-faint)}
+
+.mood-scale{display:flex; gap:5px; margin:10px 0}
+.mood-dot{
+  flex:1; aspect-ratio:1; border-radius:7px; border:1px solid var(--line-strong); background:var(--bg-sunken);
+  display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--ink-soft);
+}
+.mood-dot.sel{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+
+.filter-row{display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap}
+.chip{padding:6px 12px; border-radius:20px; border:1px solid var(--line-strong); background:transparent; font-size:12.5px; font-weight:600; color:var(--ink-soft)}
+.chip.active{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+
+.debt-tabs{display:flex; gap:8px; margin-bottom:12px}
+.debt-tab{flex:1; padding:10px; border-radius:8px; text-align:center; background:var(--bg-sunken); border:1px solid var(--line); font-weight:700}
+.debt-tab.active.to{background:var(--accent-soft); color:var(--accent); border-color:transparent}
+.debt-tab.active.by{background:var(--danger-soft); color:var(--danger); border-color:transparent}
+.debt-tab .dnum{display:block; font-family:'Noto Kufi Arabic',sans-serif; font-size:17px; margin-top:2px}
+
+.net-figure{text-align:center; padding:6px 0 16px}
+.net-figure .nf-num{font-family:'Noto Kufi Arabic',sans-serif; font-size:32px; font-weight:800}
+.net-figure .nf-lbl{font-size:12px; color:var(--ink-faint); margin-top:2px}
+
+.spark-wrap{margin-top:6px}
+.spark-wrap svg{width:100%; height:56px; display:block}
+
+.modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:90; display:flex; align-items:flex-end; justify-content:center}
+.modal{background:var(--bg-elevated); width:100%; max-width:760px; border-radius:16px 16px 0 0; padding:18px 16px 26px; max-height:85vh; overflow:auto}
+.modal h2{margin-top:0}
+.modal-close-row{text-align:left; margin-bottom:6px}
+
+.toast{
+  position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--bg);
+  padding:10px 18px; border-radius:20px; font-size:13px; z-index:200; box-shadow:0 4px 14px rgba(0,0,0,.25);
+}
+:root[data-theme="dark"] .toast{background:var(--accent); color:var(--accent-ink)}
+
+.countdown-box{display:flex; align-items:center; gap:14px}
+.countdown-num{font-family:'Noto Kufi Arabic',sans-serif; font-size:38px; font-weight:800; color:var(--accent); line-height:1}
+.countdown-txt{font-size:13px; color:var(--ink-soft)}
+textarea{min-height:70px; resize:vertical}
+
+.form-add{border-top:1px dashed var(--line); margin-top:14px; padding-top:14px}
+.small-note{font-size:12px; color:var(--ink-faint); margin-top:6px}
+
+@media (min-width:640px){
+  .wallet-grid{grid-template-columns:repeat(4,1fr)}
+  .wallet-card.cash{grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen" class="lock-screen">
+  <div class="lock-card">
+    <div class="lock-mark">Im Drago</div>
+    <div class="lock-sub">وقت، شغل، مصاري — كلشي بمكان واحد</div>
+    <div class="field"><input type="password" id="lockInput" placeholder="كلمة السر" autocomplete="off"></div>
+    <button id="lockSubmit" style="width:100%">دخول</button>
+    <div class="lock-error" id="lockError"></div>
+  </div>
+</div>
+
+<div id="appShell" class="hidden">
+  <div id="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">ID</div>
+        <div class="brand-text">
+          <h1>Im Drago</h1>
+          <p id="todayDate"></p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="themeToggle" aria-label="تبديل المظهر">
+          <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.6"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg>
+        </button>
+        <button class="icon-btn" id="settingsBtn" aria-label="الإعدادات">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 000-2l2-1.5-2-3.4-2.3.9a7.7 7.7 0 00-1.7-1l-.4-2.4h-4l-.4 2.4a7.7 7.7 0 00-1.7 1l-2.3-.9-2 3.4L6.6 11a7.6 7.6 0 000 2l-2 1.6 2 3.4 2.3-.9c.5.4 1.1.8 1.7 1l.4 2.4h4l.4-2.4a7.7 7.7 0 001.7-1l2.3.9 2-3.4-2-1.6z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabbar" id="tabbar">
+      <button class="tab" data-tab="home">الرئيسية</button>
+      <button class="tab" data-tab="routine">الروتين</button>
+      <button class="tab" data-tab="shifts">الدوام</button>
+      <button class="tab" data-tab="usdt">USDT</button>
+      <button class="tab" data-tab="recharge">تشاريج</button>
+      <button class="tab" data-tab="income">دخل إضافي</button>
+      <button class="tab" data-tab="debts">الديون</button>
+    </nav>
+
+    <main id="app">
+      <section class="tab-panel" id="tab-home"></section>
+      <section class="tab-panel" id="tab-routine"></section>
+      <section class="tab-panel" id="tab-shifts"></section>
+      <section class="tab-panel" id="tab-usdt"></section>
+      <section class="tab-panel" id="tab-recharge"></section>
+      <section class="tab-panel" id="tab-income"></section>
+      <section class="tab-panel" id="tab-debts"></section>
+    </main>
+  </div>
+</div>
+
+<div id="modalBackdrop" class="modal-backdrop hidden">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+'use strict';
+/* ==================== STORAGE ==================== */
+const STORE_KEY='imdrago_data';
+const HOURLY_RATE = 11.5/8; // $ per hour, base 11.5$ per 8h shift
+const DEFAULT_HABITS = ['فرش السرير','غسل الوجه','تفريش الأسنان','كاسة مي عالريق','١٠ دقايق رياضة/تمدد','وقت قراءة أو تعلم','وقت راحة ذهنية'];
+
+function defaultState(){
+  return {
+    passwordHash: hash('amal'),
+    theme:'dark',
+    habits: DEFAULT_HABITS.map(n=>({id:uid(),name:n})),
+    habitLogs:{}, // date -> {habitId:true}
+    moodLogs:{}, // date -> {mood, note}
+    weightLogs:[], // {id,date,weight}
+    shifts:[], // {id,date,start,end,hours,wage,note,absent,reason}
+    usdt:[], // {id,date,client,amount,rate,method,profit,status,paidDate}
+    recharge:[], // {id,date,client,phone,type,amount,profit,status,paidDate}
+    income:[], // {id,date,source,desc,amount,profit,category}
+    debts:[], // {id,type:'to'|'by',person,amount,date,due,note,status}
+    ledger:[], // {id,date,wallet,amount,type,note,ref}
+    goals:'',
+    maxStreak:0
+  };
+}
+function hash(s){ let h=0; for(let i=0;i<s.length;i++){h=(h<<5)-h+s.charCodeAt(i); h|=0;} return 'h'+h; }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+let state = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultState(), parsed);
+  }catch(e){ return defaultState(); }
+}
+function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+
+/* ==================== DATE / FORMAT HELPERS ==================== */
+function pad(n){ return String(n).padStart(2,'0'); }
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function dateStr(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function fmtDate(s){ if(!s) return ''; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
+function money(n){
+  n = Number(n)||0;
+  const sign = n<0?'-':'';
+  return sign + Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) + '$';
+}
+function daysAgo(n){ const d=new Date(); d.setDate(d.getDate()-n); return dateStr(d); }
+const WEEKDAYS_AR=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const MONTHS_AR=['كانون الثاني','شباط','آذار','نيسان','أيار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'];
+function fmtToday(){ const d=new Date(); return `${WEEKDAYS_AR[d.getDay()]}، ${d.getDate()} ${MONTHS_AR[d.getMonth()]}`; }
+
+/* ==================== LEDGER / WALLETS ==================== */
+function addLedger(wallet, amount, type, note, ref, date){
+  state.ledger.push({id:uid(), date: date||todayStr(), wallet, amount, type, note:note||'', ref:ref||''});
+}
+function walletBalance(w){
+  return state.ledger.filter(e=>e.wallet===w).reduce((s,e)=>s+e.amount,0);
+}
+const WALLET_LABELS = {cash:'الكاش', security:'شغل السكيورتي', usdt:'USDT', recharge:'تشاريج', income:'دخل إضافي'};
+
+/* ==================== TOAST / MODAL ==================== */
+let toastTimer=null;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.add('hidden'), 2200);
+}
+function openModal(html){
+  document.getElementById('modalBody').innerHTML = `<div class="modal-close-row"><button class="icon-btn" data-action="closeModal">✕</button></div>` + html;
+  document.getElementById('modalBackdrop').classList.remove('hidden');
+}
+function closeModal(){ document.getElementById('modalBackdrop').classList.add('hidden'); }
+
+function openTransferModal(w){
+  const bal = walletBalance(w);
+  openModal(`
+    <h2>تحويل للكاش</h2>
+    <p class="small-note">من ${WALLET_LABELS[w]} — الرصيد الحالي: <strong class="tnum">${money(bal)}</strong></p>
+    <div class="field"><label>قديش بدك تحول؟</label><input type="number" step="0.01" id="modalAmount" value="${bal>0?bal.toFixed(2):''}" autofocus></div>
+    <button data-action="confirmTransfer" data-wallet="${w}" style="width:100%">تأكيد التحويل</button>
+  `);
+}
+function openAddFundsModal(presetWallet){
+  const wallets = ['cash','security','usdt','recharge','income'];
+  const options = wallets.map(w=>`<option value="${w}" ${w===presetWallet?'selected':''}>${WALLET_LABELS[w]}</option>`).join('');
+  openModal(`
+    <h2>إضافة مصاري يدوياً</h2>
+    <div class="field"><label>لأي محفظة؟</label><select id="modalWallet">${options}</select></div>
+    <div class="field"><label>المبلغ</label><input type="number" step="0.01" id="modalAmount" placeholder="0.00" autofocus></div>
+    <div class="field"><label>ملاحظة (اختياري)</label><input type="text" id="modalNote" placeholder="مثلاً: رأس مال، هدية، تسوية..."></div>
+    <button data-action="confirmManualAdd" style="width:100%">إضافة للمحفظة</button>
+  `);
+}
+
+/* ==================== THEME ==================== */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', state.theme);
+}
+
+/* ==================== LOCK SCREEN ==================== */
+function initLock(){
+  const unlocked = sessionStorage.getItem('imdrago_unlocked')==='1';
+  if(unlocked){ showApp(); return; }
+  document.getElementById('lockInput').focus();
+  document.getElementById('lockSubmit').addEventListener('click', tryUnlock);
+  document.getElementById('lockInput').addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+}
+function tryUnlock(){
+  const val = document.getElementById('lockInput').value;
+  if(hash(val)===state.passwordHash){
+    sessionStorage.setItem('imdrago_unlocked','1');
+    showApp();
+  } else {
+    document.getElementById('lockError').textContent='كلمة السر غلط، جرب كمان';
+    document.getElementById('lockInput').value='';
+  }
+}
+function showApp(){
+  document.getElementById('lockScreen').classList.add('hidden');
+  document.getElementById('appShell').classList.remove('hidden');
+  document.getElementById('todayDate').textContent = fmtToday();
+  applyTheme();
+  switchTab('home');
+}
+
+/* ==================== TABS ==================== */
+let currentTab='home';
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active', p.id==='tab-'+tab));
+  renderTab(tab);
+}
+function renderTab(tab){
+  if(tab==='home') renderHome();
+  else if(tab==='routine') renderRoutine();
+  else if(tab==='shifts') renderShifts();
+  else if(tab==='usdt') renderUsdt();
+  else if(tab==='recharge') renderRecharge();
+  else if(tab==='income') renderIncome();
+  else if(tab==='debts') renderDebts();
+}
+function rerender(){ renderTab(currentTab); }
+
+/* ==================== LEDGER ROW HELPER ==================== */
+function ledgerRow(label, amountText, cls){
+  return `<div class="ledger-row"><span class="lbl">${label}</span><span class="lead"></span><span class="amt ${cls||''}">${amountText}</span></div>`;
+}
+
+/* ==================== HOME ==================== */
+function habitCompletionPct(date){
+  const habits = state.habits;
+  if(habits.length===0) return 0;
+  const log = state.habitLogs[date] || {};
+  const done = habits.filter(h=>log[h.id]).length;
+  return Math.round((done/habits.length)*100);
+}
+function avgCompletionLastNDays(n){
+  let sum=0;
+  for(let i=0;i<n;i++) sum += habitCompletionPct(daysAgo(i));
+  return Math.round(sum/n);
+}
+function netManualDebts(){
+  const to = state.debts.filter(d=>d.type==='to' && d.status!=='settled').reduce((s,d)=>s+Number(d.amount),0);
+  const by = state.debts.filter(d=>d.type==='by' && d.status!=='settled').reduce((s,d)=>s+Number(d.amount),0);
+  return {to, by, net: to-by};
+}
+function netWorth(){
+  const wallets = ['cash','security','usdt','recharge','income'].reduce((s,w)=>s+walletBalance(w),0);
+  const {net} = netManualDebts();
+  return wallets + net;
+}
+function renderHome(){
+  const el = document.getElementById('tab-home');
+  const cash = walletBalance('cash');
+  const security = walletBalance('security');
+  const usdt = walletBalance('usdt');
+  const recharge = walletBalance('recharge');
+  const income = walletBalance('income');
+  const debts = netManualDebts();
+  const weightLogs = state.weightLogs.slice().sort((a,b)=>a.date<b.date?1:-1);
+  const latestWeight = weightLogs[0];
+  const moodDates = Array.from({length:14},(_,i)=>daysAgo(13-i));
+  const moodVals = moodDates.map(d=> state.moodLogs[d] ? state.moodLogs[d].mood : null);
+  const todayMood = state.moodLogs[todayStr()];
+
+  el.innerHTML = `
+    <div class="card">
+      <h2>المحافظ</h2>
+      <div class="wallet-grid">
+        <div class="wallet-card cash">
+          <div class="wname">الكاش المركزي</div>
+          <div class="wbal tnum">${money(cash)}</div>
+          <button class="secondary small" data-action="openAddFunds" data-wallet="cash">زود رصيد يدوياً</button>
+        </div>
+        <div class="wallet-card"><div class="wname">شغل السكيورتي</div><div class="wbal tnum">${money(security)}</div>
+          <div class="wallet-btns">
+            <button class="secondary" data-action="openTransfer" data-wallet="security" ${security<=0?'disabled':''}>حوّل للكاش</button>
+            <button class="secondary" data-action="openAddFunds" data-wallet="security">زود رصيد</button>
+          </div>
+        </div>
+        <div class="wallet-card"><div class="wname">USDT</div><div class="wbal tnum">${money(usdt)}</div>
+          <div class="wallet-btns">
+            <button class="secondary" data-action="openTransfer" data-wallet="usdt" ${usdt<=0?'disabled':''}>حوّل للكاش</button>
+            <button class="secondary" data-action="openAddFunds" data-wallet="usdt">زود رصيد</button>
+          </div>
+        </div>
+        <div class="wallet-card"><div class="wname">تشاريج</div><div class="wbal tnum">${money(recharge)}</div>
+          <div class="wallet-btns">
+            <button class="secondary" data-action="openTransfer" data-wallet="recharge" ${recharge<=0?'disabled':''}>حوّل للكاش</button>
+            <button class="secondary" data-action="openAddFunds" data-wallet="recharge">زود رصيد</button>
+          </div>
+        </div>
+        <div class="wallet-card"><div class="wname">دخل إضافي</div><div class="wbal tnum">${money(income)}</div>
+          <div class="wallet-btns">
+            <button class="secondary" data-action="openTransfer" data-wallet="income" ${income<=0?'disabled':''}>حوّل للكاش</button>
+            <button class="secondary" data-action="openAddFunds" data-wallet="income">زود رصيد</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>تحليل مالي</h2>
+      <div class="net-figure">
+        <div class="nf-num tnum">${money(netWorth())}</div>
+        <div class="nf-lbl">صافي المركز المالي</div>
+      </div>
+      ${ledgerRow('كاش', money(cash))}
+      ${ledgerRow('شغل السكيورتي', money(security))}
+      ${ledgerRow('USDT', money(usdt))}
+      ${ledgerRow('تشاريج', money(recharge))}
+      ${ledgerRow('دخل إضافي', money(income))}
+      ${ledgerRow('ديون إلي (منتظرة)', '+'+money(debts.to), 'pos')}
+      ${ledgerRow('ديون علي', '-'+money(debts.by), 'neg')}
+    </div>
+
+    <div class="card">
+      <h2>تحليل جسدي</h2>
+      ${ledgerRow('نسبة إنجاز العادات (٧ أيام)', avgCompletionLastNDays(7)+'%')}
+      ${ledgerRow('آخر وزن مسجل', latestWeight? latestWeight.weight+' كغ · '+fmtDate(latestWeight.date) : '—')}
+      <div class="form-add">
+        <div class="field-row">
+          <div class="field"><label>سجل وزنك اليوم (كغ)</label><input type="number" step="0.1" id="weightInput" placeholder="مثلاً 72.5"></div>
+        </div>
+        <button data-action="logWeight">حفظ الوزن</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>تحليل نفسي</h2>
+      ${ledgerRow('حس اليوم', todayMood? todayMood.mood+'/١٠' : 'لسا ما جاوبت')}
+      <div class="spark-wrap">${moodSparkline(moodVals)}</div>
+      <div class="small-note">آخر ١٤ يوم — عبّي "قفلة اليوم" من تبويب الروتين لتتحدث</div>
+    </div>
+
+    <div class="card">
+      <h2>محطة سنوية <span class="muted">٢١ شباط</span></h2>
+      <div class="countdown-box">
+        <div class="countdown-num tnum">${daysUntilBirthday()}</div>
+        <div class="countdown-txt">يوم لعيد ميلادك<br>وقت تراجع السنة وتحط أهداف جديدة</div>
+      </div>
+      <div class="form-add">
+        <label>أهداف هالسنة</label>
+        <textarea id="goalsInput" placeholder="اكتب أهدافك هون...">${escapeHtml(state.goals)}</textarea>
+        <button data-action="saveGoals" style="margin-top:8px">حفظ</button>
+      </div>
+    </div>
+  `;
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function daysUntilBirthday(){
+  const now = new Date();
+  let target = new Date(now.getFullYear(), 1, 21);
+  if(target < now) target = new Date(now.getFullYear()+1, 1, 21);
+  return Math.ceil((target - now)/(1000*60*60*24));
+}
+function moodSparkline(vals){
+  const w=300, h=56, n=vals.length;
+  const known = vals.filter(v=>v!==null);
+  if(known.length===0) return `<div class="empty-state">ما في بيانات حس لسا</div>`;
+  const pts = [];
+  vals.forEach((v,i)=>{
+    if(v===null) return;
+    const x = (i/(n-1))*w;
+    const y = h - ((v-1)/9)*h;
+    pts.push([x,y]);
+  });
+  const path = pts.map(p=>p.join(',')).join(' ');
+  const circles = pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.4" fill="var(--accent)"/>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${path}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${circles}</svg>`;
+}
+
+/* ==================== ROUTINE ==================== */
+function computeStreak(){
+  let streak=0; let i=0;
+  // if today not yet meeting threshold, start counting from yesterday
+  let startOffset = habitCompletionPct(todayStr())>=70 ? 0 : 1;
+  for(i=startOffset; i<400; i++){
+    if(habitCompletionPct(daysAgo(i))>=70) streak++; else break;
+  }
+  if(streak > state.maxStreak){ state.maxStreak = streak; save(); }
+  return streak;
+}
+function renderRoutine(){
+  const el = document.getElementById('tab-routine');
+  const today = todayStr();
+  const log = state.habitLogs[today] || {};
+  const streak = computeStreak();
+  const todayMood = state.moodLogs[today];
+  const trendDates = Array.from({length:14},(_,i)=>daysAgo(13-i));
+  const trendVals = trendDates.map(d=>habitCompletionPct(d));
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="streak-row">
+        <div><div class="streak-num tnum">${streak}</div><div class="streak-label">يوم متتالي</div></div>
+        <div style="text-align:left"><div class="tnum" style="font-size:20px;font-weight:700">${habitCompletionPct(today)}%</div><div class="streak-label">إنجاز اليوم</div></div>
+      </div>
+      <div class="badges-row">
+        <div class="milestone ${state.maxStreak>=7?'earned':''}"><div class="mnum">٧</div><div class="mlbl">أيام متتالية</div></div>
+        <div class="milestone ${state.maxStreak>=30?'earned':''}"><div class="mnum">٣٠</div><div class="mlbl">يوم متتالي</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>عادات اليوم</h2>
+      ${state.habits.length===0? `<div class="empty-state">ضيف أول عادة تلّك</div>` :
+        state.habits.map(h=>{
+          const done = !!log[h.id];
+          return `<div class="habit-item">
+            <div class="habit-check ${done?'done':''}" data-action="toggleHabit" data-id="${h.id}">${done?'✓':''}</div>
+            <div class="habit-name">${escapeHtml(h.name)}</div>
+            <button class="ghost habit-del" data-action="delHabit" data-id="${h.id}">حذف</button>
+          </div>`;
+        }).join('')
+      }
+      <div class="form-add">
+        <div class="field-row">
+          <div class="field"><input type="text" id="newHabitInput" placeholder="عادة جديدة..."></div>
+        </div>
+        <button data-action="addHabit">ضيف عادة</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>اتجاه الإنجاز <span class="muted">آخر ١٤ يوم</span></h2>
+      <div class="spark-wrap">${habitSparkline(trendVals)}</div>
+    </div>
+
+    <div class="card">
+      <h2>قفلة اليوم</h2>
+      <label>شو حسك اليوم؟ (١ لـ ١٠)</label>
+      <div class="mood-scale">
+        ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="mood-dot ${todayMood&&todayMood.mood===n?'sel':''}" data-action="pickMood" data-n="${n}">${n}</div>`).join('')}
+      </div>
+      <div class="field"><textarea id="moodNote" placeholder="ملاحظة سريعة (اختياري)">${todayMood?escapeHtml(todayMood.note||''):''}</textarea></div>
+      <button data-action="saveMoodNote">${todayMood?'تحديث':'حفظ'}</button>
+    </div>
+  `;
+}
+function habitSparkline(vals){
+  const w=300,h=56;
+  const pts = vals.map((v,i)=>[ (i/(vals.length-1))*w, h-(v/100)*h ]);
+  const path = pts.map(p=>p.join(',')).join(' ');
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${path}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+}
+
+/* ==================== SHIFTS ==================== */
+function calcHours(start,end){
+  const [sh,sm]=start.split(':').map(Number);
+  const [eh,em]=end.split(':').map(Number);
+  let mins = (eh*60+em)-(sh*60+sm);
+  if(mins<0) mins += 24*60;
+  return mins/60;
+}
+function monthShifts(){
+  const now = new Date();
+  const ym = now.getFullYear()+'-'+pad(now.getMonth()+1);
+  return state.shifts.filter(s=>s.date.startsWith(ym) && !s.absent);
+}
+function renderShifts(){
+  const el = document.getElementById('tab-shifts');
+  const list = state.shifts.slice().sort((a,b)=>a.date<b.date?1:-1);
+  const mShifts = monthShifts();
+  const earned = mShifts.reduce((s,x)=>s+x.wage,0);
+  const avgDaily = mShifts.length? earned/mShifts.length : HOURLY_RATE*8;
+  const now = new Date();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const remainingDays = Math.max(daysInMonth - now.getDate(), 0);
+  const projected = earned + avgDaily*remainingDays;
+
+  el.innerHTML = `
+    <div class="card">
+      <h2>توقع دخل الشهر</h2>
+      ${ledgerRow('مكسوب لهلق', money(earned))}
+      ${ledgerRow('متوقع نهاية الشهر', money(projected), 'pos')}
+      <div class="small-note">مبني على متوسط أجرك اليومي هالشهر (${money(avgDaily)}/يوم)</div>
+    </div>
+
+    <div class="card">
+      <h2>تسجيل دوام</h2>
+      <div class="field"><label>التاريخ</label><input type="date" id="shiftDate" value="${todayStr()}"></div>
+      <div class="field-row">
+        <div class="field"><label>وقت البداية</label><input type="time" id="shiftStart" value="08:00"></div>
+        <div class="field"><label>وقت النهاية</label><input type="time" id="shiftEnd" value="16:00"></div>
+      </div>
+      <div class="field"><label>ملاحظة (اختياري)</label><input type="text" id="shiftNote" placeholder="..."></div>
+      <button data-action="addShift">حفظ الدوام</button>
+      <div style="margin-top:10px">
+        <button class="secondary small" data-action="addAbsence">سجل غياب بدل هيك</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>سجل الدوام</h2>
+      ${list.length===0? `<div class="empty-state">ما في دوامات مسجلة بعد</div>` :
+        list.map(s=>`
+        <div class="list-entry">
+          <div class="row1">
+            <span class="who">${fmtDate(s.date)}</span>
+            <span class="amt tnum">${s.absent? '' : money(s.wage)}</span>
+          </div>
+          <div class="meta">${s.absent? `<span class="badge absent">غياب${s.reason? ' — '+escapeHtml(s.reason):''}</span>` : `${s.start} - ${s.end} · ${s.hours.toFixed(2)} ساعة ${s.note?(' · '+escapeHtml(s.note)):''}`}</div>
+          <div class="actions"><button class="ghost small" data-action="delShift" data-id="${s.id}">حذف</button></div>
+        </div>`).join('')
+      }
+    </div>
+  `;
+}
+
+/* ==================== USDT & RECHARGE (shared logic) ==================== */
+function renderTxModule(kind){
+  // kind: 'usdt' or 'recharge'
+  const el = document.getElementById('tab-'+kind);
+  const filter = state['_filter_'+kind] || 'all';
+  const search = state['_search_'+kind] || '';
+  let list = state[kind].slice().sort((a,b)=>a.date<b.date?1:-1);
+  if(filter==='paid') list = list.filter(x=>x.status==='paid');
+  if(filter==='unpaid') list = list.filter(x=>x.status==='unpaid');
+  if(search) list = list.filter(x=>x.client.toLowerCase().includes(search.toLowerCase()));
+
+  const wallet = walletBalance(kind);
+  const totalProfit = state[kind].filter(x=>x.status==='paid').reduce((s,x)=>s+Number(x.profit||0),0);
+  const unpaidTotal = state[kind].filter(x=>x.status==='unpaid').reduce((s,x)=>s+Number(x.amount),0);
+
+  const isUsdt = kind==='usdt';
+  el.innerHTML = `
+    <div class="card">
+      <h2>محفظة ${WALLET_LABELS[kind]}</h2>
+      ${ledgerRow('الرصيد', money(wallet))}
+      ${ledgerRow('أرباح مقبوضة', '+'+money(totalProfit), 'pos')}
+      ${ledgerRow('مبالغ لسا ما تسددت', money(unpaidTotal), 'due')}
+    </div>
+
+    <div class="card">
+      <h2>${isUsdt? 'بيع USDT جديد' : 'شحنة جديدة'}</h2>
+      <div class="field"><label>اسم الزبون</label><input type="text" id="tx_client_${kind}" placeholder="..."></div>
+      ${!isUsdt? `<div class="field-row">
+                    <div class="field"><label>رقم الهاتف</label><input type="text" id="tx_phone_${kind}" placeholder="..."></div>
+                    <div class="field"><label>نوع الشحن</label><input type="text" id="tx_type_${kind}" placeholder="MTC / Alfa / كرت لعب..."></div>
+                  </div>` : ''}
+      <div class="field-row">
+        <div class="field"><label>${isUsdt? 'المبلغ المسحوب من المحفظة' : 'المبلغ'}</label><input type="number" step="0.01" id="tx_amount_${kind}" placeholder="0.00"></div>
+        <div class="field"><label>هامش الربح</label><input type="number" step="0.01" id="tx_profit_${kind}" placeholder="0.00"></div>
+      </div>
+      ${isUsdt? `<div class="field"><label>طريقة الدفع (اختياري)</label><input type="text" id="tx_method_${kind}" placeholder="كاش / تحويل..."></div>` : ''}
+      <div class="field">
+        <label>الحالة</label>
+        <select id="tx_status_${kind}">
+          <option value="paid">دفع فوراً</option>
+          <option value="unpaid">لسا ما دفع</option>
+        </select>
+      </div>
+      <button data-action="addTx" data-kind="${kind}">حفظ العملية</button>
+    </div>
+
+    <div class="card">
+      <h2>السجل</h2>
+      <div class="field"><input type="text" placeholder="دوّر باسم الزبون..." data-action="searchTx" data-kind="${kind}" value="${escapeHtml(search)}"></div>
+      <div class="filter-row">
+        <button class="chip ${filter==='all'?'active':''}" data-action="filterTx" data-kind="${kind}" data-f="all">الكل</button>
+        <button class="chip ${filter==='unpaid'?'active':''}" data-action="filterTx" data-kind="${kind}" data-f="unpaid">عندهم دين</button>
+        <button class="chip ${filter==='paid'?'active':''}" data-action="filterTx" data-kind="${kind}" data-f="paid">مسدد</button>
+      </div>
+      ${list.length===0? `<div class="empty-state">ما في عمليات مطابقة</div>` :
+        list.map(x=>`
+        <div class="list-entry">
+          <div class="row1">
+            <span class="who">${escapeHtml(x.client)}</span>
+            <span class="amt tnum">${money(x.amount)}</span>
+          </div>
+          <div class="meta">
+            ${fmtDate(x.date)} ${!isUsdt&&x.phoneType? ' · '+escapeHtml(x.phoneType):''}
+            · ربح ${money(x.profit||0)}
+            <span class="badge ${x.status==='paid'?'paid':'unpaid'}">${x.status==='paid'?'مسدد':'دين'}</span>
+          </div>
+          <div class="actions">
+            ${x.status==='unpaid'? `<button class="warn small" data-action="settleTx" data-kind="${kind}" data-id="${x.id}">سدد</button>`:''}
+            <button class="ghost small" data-action="delTx" data-kind="${kind}" data-id="${x.id}">حذف</button>
+          </div>
+        </div>`).join('')
+      }
+    </div>
+  `;
+}
+function renderUsdt(){ renderTxModule('usdt'); }
+function renderRecharge(){ renderTxModule('recharge'); }
+
+/* ==================== INCOME ==================== */
+function renderIncome(){
+  const el = document.getElementById('tab-income');
+  const list = state.income.slice().sort((a,b)=>a.date<b.date?1:-1);
+  const wallet = walletBalance('income');
+  const byCat = {};
+  state.income.forEach(x=>{ const c=x.category||'أخرى'; byCat[c]=(byCat[c]||0)+Number(x.amount)+Number(x.profit||0); });
+
+  el.innerHTML = `
+    <div class="card">
+      <h2>محفظة دخل إضافي</h2>
+      ${ledgerRow('الرصيد', money(wallet))}
+    </div>
+
+    <div class="card">
+      <h2>مصدر دخل جديد</h2>
+      <div class="field"><label>اسم المصدر</label><input type="text" id="inc_source" placeholder="..."></div>
+      <div class="field"><label>وصف الشغلة</label><input type="text" id="inc_desc" placeholder="..."></div>
+      <div class="field-row">
+        <div class="field"><label>المبلغ</label><input type="number" step="0.01" id="inc_amount" placeholder="0.00"></div>
+        <div class="field"><label>الربح (اختياري)</label><input type="number" step="0.01" id="inc_profit" placeholder="0.00"></div>
+      </div>
+      <div class="field">
+        <label>التصنيف</label>
+        <select id="inc_category">
+          <option value="فريلانس">فريلانس</option>
+          <option value="بيع غرض">بيع غرض</option>
+          <option value="مساعدة">مساعدة</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </div>
+      <button data-action="addIncome">حفظ</button>
+    </div>
+
+    ${Object.keys(byCat).length? `<div class="card"><h2>حسب التصنيف</h2>${Object.entries(byCat).map(([c,v])=>ledgerRow(c, money(v))).join('')}</div>` : ''}
+
+    <div class="card">
+      <h2>السجل</h2>
+      ${list.length===0? `<div class="empty-state">ما في دخل مسجل بعد</div>` :
+        list.map(x=>`
+        <div class="list-entry">
+          <div class="row1"><span class="who">${escapeHtml(x.source)}</span><span class="amt tnum">${money(Number(x.amount)+Number(x.profit||0))}</span></div>
+          <div class="meta">${fmtDate(x.date)} · ${escapeHtml(x.category)} ${x.desc? ' · '+escapeHtml(x.desc):''}</div>
+          <div class="actions"><button class="ghost small" data-action="delIncome" data-id="${x.id}">حذف</button></div>
+        </div>`).join('')
+      }
+    </div>
+  `;
+}
+
+/* ==================== DEBTS ==================== */
+function renderDebts(){
+  const el = document.getElementById('tab-debts');
+  const view = state._debtView || 'to';
+  const autoTo = [
+    ...state.usdt.filter(x=>x.status==='unpaid').map(x=>({person:x.client, amount:x.amount, date:x.date, auto:true, kind:'usdt', id:x.id})),
+    ...state.recharge.filter(x=>x.status==='unpaid').map(x=>({person:x.client, amount:x.amount, date:x.date, auto:true, kind:'recharge', id:x.id})),
+  ];
+  const manualTo = state.debts.filter(d=>d.type==='to' && d.status!=='settled');
+  const manualBy = state.debts.filter(d=>d.type==='by' && d.status!=='settled');
+  const totalTo = autoTo.reduce((s,x)=>s+Number(x.amount),0) + manualTo.reduce((s,x)=>s+Number(x.amount),0);
+  const totalBy = manualBy.reduce((s,x)=>s+Number(x.amount),0);
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="debt-tabs">
+        <div class="debt-tab to ${view==='to'?'active':''}" data-action="debtView" data-v="to">إلي<span class="dnum tnum">${money(totalTo)}</span></div>
+        <div class="debt-tab by ${view==='by'?'active':''}" data-action="debtView" data-v="by">علي<span class="dnum tnum">${money(totalBy)}</span></div>
+      </div>
+      ${ledgerRow('الصافي', money(totalTo-totalBy), totalTo-totalBy>=0?'pos':'neg')}
+    </div>
+
+    <div class="card">
+      <h2>دين جديد</h2>
+      <div class="field"><label>الاسم</label><input type="text" id="debt_person" placeholder="..."></div>
+      <div class="field-row">
+        <div class="field"><label>المبلغ</label><input type="number" step="0.01" id="debt_amount" placeholder="0.00"></div>
+        <div class="field"><label>تاريخ الاستحقاق (اختياري)</label><input type="date" id="debt_due"></div>
+      </div>
+      <div class="field"><label>ملاحظة</label><input type="text" id="debt_note" placeholder="..."></div>
+      <button data-action="addDebt" data-type="${view}">${view==='to'? 'ضيف دين إلي' : 'ضيف دين علي'}</button>
+    </div>
+
+    <div class="card">
+      <h2>${view==='to'? 'ديون إلي' : 'ديون علي'}</h2>
+      ${view==='to'? renderDebtListTo(autoTo, manualTo) : renderDebtListBy(manualBy)}
+    </div>
+  `;
+}
+function renderDebtListTo(autoTo, manualTo){
+  if(autoTo.length===0 && manualTo.length===0) return `<div class="empty-state">ما في ديون إلك عالناس</div>`;
+  let html='';
+  autoTo.forEach(x=>{
+    html += `<div class="list-entry">
+      <div class="row1"><span class="who">${escapeHtml(x.person)}</span><span class="amt tnum">${money(x.amount)}</span></div>
+      <div class="meta">${fmtDate(x.date)} · من ${x.kind==='usdt'?'USDT':'تشاريج'} <span class="badge unpaid">دين</span></div>
+      <div class="actions"><button class="warn small" data-action="settleTx" data-kind="${x.kind}" data-id="${x.id}">سدد</button></div>
+    </div>`;
+  });
+  manualTo.forEach(d=>{
+    html += `<div class="list-entry">
+      <div class="row1"><span class="who">${escapeHtml(d.person)}</span><span class="amt tnum">${money(d.amount)}</span></div>
+      <div class="meta">${fmtDate(d.date)}${d.due? ' · يستحق '+fmtDate(d.due):''} ${d.note? ' · '+escapeHtml(d.note):''}</div>
+      <div class="actions">
+        <button class="warn small" data-action="settleDebt" data-id="${d.id}">سدد</button>
+        <button class="ghost small" data-action="delDebt" data-id="${d.id}">حذف</button>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+function renderDebtListBy(manualBy){
+  if(manualBy.length===0) return `<div class="empty-state">ما في ديون عليك</div>`;
+  return manualBy.map(d=>`
+    <div class="list-entry">
+      <div class="row1"><span class="who">${escapeHtml(d.person)}</span><span class="amt tnum">${money(d.amount)}</span></div>
+      <div class="meta">${fmtDate(d.date)}${d.due? ' · يستحق '+fmtDate(d.due):''} ${d.note? ' · '+escapeHtml(d.note):''}</div>
+      <div class="actions">
+        <button class="warn small" data-action="settleDebt" data-id="${d.id}">سددت</button>
+        <button class="ghost small" data-action="delDebt" data-id="${d.id}">حذف</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ==================== SETTINGS MODAL ==================== */
+function openSettings(){
+  openModal(`
+    <h2>الإعدادات</h2>
+    <div class="section-title">النسخ الاحتياطي</div>
+    <button data-action="exportData" style="width:100%; margin-bottom:8px">تصدير البيانات (نسخة احتياطية)</button>
+    <label style="margin-top:10px">استيراد نسخة احتياطية</label>
+    <input type="file" id="importFile" accept="application/json">
+    <button class="secondary" data-action="importData" style="width:100%; margin-top:8px">استيراد</button>
+
+    <div class="section-title">كلمة السر</div>
+    <div class="field"><input type="password" id="newPassInput" placeholder="كلمة سر جديدة"></div>
+    <button class="secondary" data-action="changePassword" style="width:100%">تحديث كلمة السر</button>
+
+    <div class="section-title">خطر</div>
+    <button class="danger" data-action="resetData" style="width:100%">تصفير كل البيانات</button>
+  `);
+}
+
+/* ==================== EVENT HANDLING ==================== */
+document.addEventListener('click', (e)=>{
+  const t = e.target.closest('[data-action]');
+  if(!t) return;
+  const action = t.dataset.action;
+
+  if(action==='closeModal'){ closeModal(); return; }
+
+  if(action==='toggleHabit'){
+    const id=t.dataset.id, today=todayStr();
+    if(!state.habitLogs[today]) state.habitLogs[today]={};
+    if(state.habitLogs[today][id]) delete state.habitLogs[today][id];
+    else state.habitLogs[today][id]=Date.now();
+    save(); renderRoutine(); return;
+  }
+  if(action==='delHabit'){
+    state.habits = state.habits.filter(h=>h.id!==t.dataset.id);
+    save(); renderRoutine(); return;
+  }
+  if(action==='addHabit'){
+    const inp=document.getElementById('newHabitInput');
+    if(inp.value.trim()){ state.habits.push({id:uid(), name:inp.value.trim()}); save(); renderRoutine(); }
+    return;
+  }
+  if(action==='pickMood'){
+    const n=Number(t.dataset.n), today=todayStr();
+    const note = state.moodLogs[today]?.note || '';
+    state.moodLogs[today]={mood:n, note};
+    save(); renderRoutine(); return;
+  }
+  if(action==='saveMoodNote'){
+    const today=todayStr();
+    const note = document.getElementById('moodNote').value;
+    if(!state.moodLogs[today]) state.moodLogs[today]={mood:5, note};
+    else state.moodLogs[today].note = note;
+    save(); toast('تم الحفظ'); renderRoutine(); return;
+  }
+
+  if(action==='logWeight'){
+    const v = Number(document.getElementById('weightInput').value);
+    if(!v){ toast('دخل وزن صحيح'); return; }
+    state.weightLogs.push({id:uid(), date:todayStr(), weight:v});
+    save(); toast('تم تسجيل الوزن'); renderHome(); return;
+  }
+  if(action==='saveGoals'){
+    state.goals = document.getElementById('goalsInput').value;
+    save(); toast('تم حفظ الأهداف'); return;
+  }
+  if(action==='openTransfer'){
+    openTransferModal(t.dataset.wallet); return;
+  }
+  if(action==='confirmTransfer'){
+    const w = t.dataset.wallet;
+    const bal = walletBalance(w);
+    const amt = Number(document.getElementById('modalAmount').value);
+    if(!amt || amt<=0){ toast('دخل مبلغ صحيح'); return; }
+    if(amt>bal){ toast('المبلغ أكبر من الرصيد المتوفر'); return; }
+    addLedger(w, -amt, 'transfer_out', 'تحويل للكاش');
+    addLedger('cash', amt, 'transfer_in', 'تحويل من '+WALLET_LABELS[w]);
+    save(); closeModal(); toast('تم التحويل'); renderHome(); return;
+  }
+  if(action==='openAddFunds'){
+    openAddFundsModal(t.dataset.wallet); return;
+  }
+  if(action==='confirmManualAdd'){
+    const w = document.getElementById('modalWallet').value;
+    const amt = Number(document.getElementById('modalAmount').value);
+    const note = document.getElementById('modalNote').value.trim();
+    if(!amt || amt<=0){ toast('دخل مبلغ صحيح'); return; }
+    addLedger(w, amt, 'manual_add', note || ('إضافة يدوية — '+WALLET_LABELS[w]));
+    save(); closeModal(); toast('تم إضافة الرصيد'); renderTab(currentTab); return;
+  }
+
+  if(action==='addShift'){
+    const date=document.getElementById('shiftDate').value;
+    const start=document.getElementById('shiftStart').value;
+    const end=document.getElementById('shiftEnd').value;
+    const note=document.getElementById('shiftNote').value;
+    if(!date||!start||!end){ toast('عبي كل الخانات'); return; }
+    const hours = calcHours(start,end);
+    const wage = hours*HOURLY_RATE;
+    const id=uid();
+    state.shifts.push({id,date,start,end,hours,wage,note,absent:false});
+    addLedger('security', wage, 'shift', 'دوام '+fmtDate(date), id, date);
+    save(); toast('تم حفظ الدوام'); renderShifts(); return;
+  }
+  if(action==='addAbsence'){
+    const date=document.getElementById('shiftDate').value || todayStr();
+    openModal(`
+      <h2>تسجيل غياب</h2>
+      <div class="field"><label>التاريخ</label><input type="date" id="modalAbsDate" value="${date}"></div>
+      <div class="field"><label>سبب الغياب (اختياري)</label><input type="text" id="modalAbsReason" placeholder="..."></div>
+      <button data-action="confirmAbsence" style="width:100%">حفظ الغياب</button>
+    `);
+    return;
+  }
+  if(action==='confirmAbsence'){
+    const date = document.getElementById('modalAbsDate').value || todayStr();
+    const reason = document.getElementById('modalAbsReason').value || '';
+    state.shifts.push({id:uid(), date, start:'', end:'', hours:0, wage:0, note:'', absent:true, reason});
+    save(); closeModal(); toast('تم تسجيل الغياب'); renderShifts(); return;
+  }
+  if(action==='delShift'){
+    const id=t.dataset.id;
+    state.ledger = state.ledger.filter(l=>l.ref!==id);
+    state.shifts = state.shifts.filter(s=>s.id!==id);
+    save(); renderShifts(); return;
+  }
+
+  if(action==='filterTx'){
+    state['_filter_'+t.dataset.kind]=t.dataset.f; renderTab(currentTab); return;
+  }
+  if(action==='addTx'){
+    const kind=t.dataset.kind;
+    const client=document.getElementById(`tx_client_${kind}`).value.trim();
+    const amount=Number(document.getElementById(`tx_amount_${kind}`).value);
+    const profit=Number(document.getElementById(`tx_profit_${kind}`).value)||0;
+    const status=document.getElementById(`tx_status_${kind}`).value;
+    if(!client||!amount){ toast('عبي اسم الزبون والمبلغ'); return; }
+    const id=uid(); const date=todayStr();
+    const rec = {id, date, client, amount, profit, status};
+    if(kind==='usdt'){
+      rec.method = document.getElementById('tx_method_usdt').value;
+    } else {
+      rec.phone = document.getElementById('tx_phone_recharge').value;
+      rec.phoneType = document.getElementById('tx_type_recharge').value;
+    }
+    state[kind].push(rec);
+    addLedger(kind, -amount, kind+'_out', 'عملية '+client, id, date);
+    if(status==='paid'){
+      addLedger(kind, amount+profit, kind+'_paid', 'تسديد '+client, id, date);
+    }
+    save(); toast('تم الحفظ'); renderTab(currentTab); return;
+  }
+  if(action==='settleTx'){
+    const kind=t.dataset.kind, id=t.dataset.id;
+    const rec = state[kind].find(x=>x.id===id);
+    if(!rec || rec.status==='paid') return;
+    rec.status='paid'; rec.paidDate=todayStr();
+    addLedger('cash', Number(rec.amount)+Number(rec.profit||0), kind+'_paid', 'تسديد دين '+rec.client+' ('+WALLET_LABELS[kind]+')', id);
+    save(); toast('تم التسديد — انضاف للكاش'); renderTab(currentTab); return;
+  }
+  if(action==='delTx'){
+    const kind=t.dataset.kind, id=t.dataset.id;
+    state.ledger = state.ledger.filter(l=>l.ref!==id);
+    state[kind] = state[kind].filter(x=>x.id!==id);
+    save(); renderTab(currentTab); return;
+  }
+
+  if(action==='addIncome'){
+    const source=document.getElementById('inc_source').value.trim();
+    const desc=document.getElementById('inc_desc').value.trim();
+    const amount=Number(document.getElementById('inc_amount').value);
+    const profit=Number(document.getElementById('inc_profit').value)||0;
+    const category=document.getElementById('inc_category').value;
+    if(!source||!amount){ toast('عبي اسم المصدر والمبلغ'); return; }
+    const id=uid();
+    state.income.push({id, date:todayStr(), source, desc, amount, profit, category});
+    addLedger('income', amount+profit, 'income', source, id);
+    save(); toast('تم الحفظ'); renderIncome(); return;
+  }
+  if(action==='delIncome'){
+    const id=t.dataset.id;
+    state.ledger = state.ledger.filter(l=>l.ref!==id);
+    state.income = state.income.filter(x=>x.id!==id);
+    save(); renderIncome(); return;
+  }
+
+  if(action==='debtView'){ state._debtView=t.dataset.v; renderDebts(); return; }
+  if(action==='addDebt'){
+    const type=t.dataset.type;
+    const person=document.getElementById('debt_person').value.trim();
+    const amount=Number(document.getElementById('debt_amount').value);
+    const due=document.getElementById('debt_due').value;
+    const note=document.getElementById('debt_note').value;
+    if(!person||!amount){ toast('عبي الاسم والمبلغ'); return; }
+    state.debts.push({id:uid(), type, person, amount, date:todayStr(), due, note, status:'open'});
+    save(); toast('تم الحفظ'); renderDebts(); return;
+  }
+  if(action==='settleDebt'){
+    const id=t.dataset.id;
+    const d = state.debts.find(x=>x.id===id);
+    if(!d) return;
+    d.status='settled';
+    if(d.type==='to') addLedger('cash', Number(d.amount), 'debt_in', 'تسديد دين من '+d.person);
+    else addLedger('cash', -Number(d.amount), 'debt_out', 'تسديد دين لـ'+d.person);
+    save(); toast('تم التسديد'); renderDebts(); return;
+  }
+  if(action==='delDebt'){
+    state.debts = state.debts.filter(x=>x.id!==t.dataset.id);
+    save(); renderDebts(); return;
+  }
+
+  if(action==='exportData'){
+    const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download='im-drago-backup-'+todayStr()+'.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    return;
+  }
+  if(action==='importData'){
+    const file = document.getElementById('importFile').files[0];
+    if(!file){ toast('اختر ملف أول'); return; }
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const parsed = JSON.parse(reader.result);
+        state = Object.assign(defaultState(), parsed);
+        save(); toast('تم الاستيراد'); closeModal(); applyTheme(); rerender();
+      }catch(err){ toast('الملف مش صالح'); }
+    };
+    reader.readAsText(file);
+    return;
+  }
+  if(action==='changePassword'){
+    const v = document.getElementById('newPassInput').value;
+    if(!v || v.length<3){ toast('كلمة السر قصيرة كتير'); return; }
+    state.passwordHash = hash(v); save(); toast('تم تحديث كلمة السر');
+    return;
+  }
+  if(action==='resetData'){
+    openModal(`
+      <h2>تأكيد التصفير</h2>
+      <p>متأكد؟ رح تنمسح كل بياناتك نهائياً ومافي رجوع.</p>
+      <div style="display:flex; gap:8px; margin-top:14px">
+        <button class="secondary" data-action="closeModal" style="flex:1">إلغاء</button>
+        <button class="danger" data-action="confirmReset" style="flex:1">نعم، امسح كلشي</button>
+      </div>
+    `);
+    return;
+  }
+  if(action==='confirmReset'){
+    state = defaultState(); save(); closeModal(); applyTheme(); rerender();
+    toast('تم تصفير البيانات');
+    return;
+  }
+});
+
+document.addEventListener('input', (e)=>{
+  if(e.target.dataset && e.target.dataset.action==='searchTx'){
+    state['_search_'+e.target.dataset.kind] = e.target.value;
+    renderTab(currentTab);
+  }
+});
+
+document.getElementById('tabbar').addEventListener('click', e=>{
+  const b = e.target.closest('.tab');
+  if(b) switchTab(b.dataset.tab);
+});
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  state.theme = state.theme==='dark' ? 'light' : 'dark';
+  save(); applyTheme();
+});
+document.getElementById('settingsBtn').addEventListener('click', openSettings);
+document.getElementById('modalBackdrop').addEventListener('click', e=>{
+  if(e.target.id==='modalBackdrop') closeModal();
+});
+
+/* ==================== INIT ==================== */
+applyTheme();
+initLock();
+</script>
+</body>
+</html>
